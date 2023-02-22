@@ -5,7 +5,7 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 let camera, controls, scene, renderer, effect;
 
-let sphere;
+let shape;
 
 init();
 animate();
@@ -27,8 +27,11 @@ function init() {
     pointLight2.position.set(- 500, - 500, - 500);
     scene.add(pointLight2);
 
-    sphere = new THREE.Mesh(new THREE.SphereGeometry(200, 20, 10), new THREE.MeshPhongMaterial({ flatShading: true }));
-    scene.add(sphere);
+    // shape = new THREE.Mesh(new THREE.SphereGeometry(200, 20, 10), new THREE.MeshPhongMaterial({ flatShading: true }));
+    // scene.add(shape);
+
+    shape = new THREE.Mesh(new THREE.DodecahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+    scene.add(shape);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -73,9 +76,9 @@ function animate() {
 
 function render() {
 
-    sphere.position.y += 0.005;
-    sphere.rotation.x += 0.005;
-    sphere.rotation.z += 0.005;
+    shape.position.y += 0.005;
+    shape.rotation.x += 0.005;
+    shape.rotation.z += 0.005;
 
     controls.update();
 
