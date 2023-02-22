@@ -1,0 +1,41 @@
+body {
+    margin: 0;
+    background: #000000;
+}
+
+#slidecontainer {
+    width: 100%;
+    /* Width of the outside container */
+    margin: 0;
+}
+
+
+.slider {
+    -webkit-appearance: none;
+    /* Override default CSS styles */
+    appearance: none;
+    width: 100%;
+    /* Full-width */
+    height: 25px;
+    /* Specified height */
+    background: #000000;
+    /* Grey background */
+    outline: none;
+    /* Remove outline */
+    opacity: 0.7;
+    /* Set transparency (for mouse-over effects on hover) */
+    -webkit-transition: .2s;
+    /* 0.2 seconds transition on hover */
+    transition: opacity .2s;
+}
+
+#label {
+    color: #ffffffbf;
+    font-size: 20px;
+    font-weight: 300;
+    font-family: Courier New, monospace;
+    position: fixed;
+    margin-left: 40px;
+    bottom: 0;
+    left: 0;
+}

@@ -5,10 +5,42 @@ import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
 let camera, controls, scene, renderer, effect;
 
-let shape;
+let polyhedrons, currentPolyhedron;
 
 init();
 animate();
+
+// get the value of the slider when it is changed
+document.getElementById("faceSlider").addEventListener("input", function () {
+    // get the value of the slider
+    let sliderValue = document.getElementById("faceSlider").value;
+    // remove the current shape from the scene
+    scene.remove(currentPolyhedron);
+    // set the current shape to the shape that corresponds to the slider value
+    currentPolyhedron = polyhedrons[sliderValue];
+    // add the new shape to the scene
+    scene.add(currentPolyhedron);
+
+    // update the text to show the current shape
+    switch (sliderValue) {
+        case "0":
+            document.getElementById("label").innerHTML = "Tetrahedron";
+            break;
+        case "1":
+            document.getElementById("label").innerHTML = "Cube";
+            break;
+        case "2":
+            document.getElementById("label").innerHTML = "Octahedron";
+            break;
+        case "3":
+            document.getElementById("label").innerHTML = "Dodecahedron";
+            break;
+        case "4":
+            document.getElementById("label").innerHTML = "Icosahedron";
+            break;
+    };
+
+});
 
 function init() {
 
@@ -27,11 +59,29 @@ function init() {
     pointLight2.position.set(- 500, - 500, - 500);
     scene.add(pointLight2);
 
-    // shape = new THREE.Mesh(new THREE.SphereGeometry(200, 20, 10), new THREE.MeshPhongMaterial({ flatShading: true }));
-    // scene.add(shape);
 
-    shape = new THREE.Mesh(new THREE.DodecahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
-    scene.add(shape);
+
+    // add a tetrahedron to the scene
+    const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    // add a cube to the scene
+    const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    // add a octahedron to the scene
+    const octahedron = new THREE.Mesh(new THREE.OctahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    // add a dodecahedron to the scene
+    const dodecahedron = new THREE.Mesh(new THREE.DodecahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    // add a icosahedron to the scene
+    const icosahedron = new THREE.Mesh(new THREE.IcosahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    // add all the shapes to an array
+    polyhedrons = [tetrahedron, cube, octahedron, dodecahedron, icosahedron];
+
+    currentPolyhedron = polyhedrons[2];
+
+    scene.add(currentPolyhedron);
 
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
@@ -76,9 +126,9 @@ function animate() {
 
 function render() {
 
-    shape.position.y += 0.005;
-    shape.rotation.x += 0.005;
-    shape.rotation.z += 0.005;
+    currentPolyhedron.position.y += 0.005;
+    currentPolyhedron.rotation.x += 0.005;
+    currentPolyhedron.rotation.z += 0.005;
 
     controls.update();
 
