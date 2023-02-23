@@ -3,7 +3,7 @@ import * as THREE from 'three';
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
 
-let camera, controls, scene, renderer, effect;
+let camera, controls, scene, renderer, ascii, currentEffect;
 
 let polyhedrons, currentPolyhedron;
 
@@ -21,25 +21,43 @@ document.getElementById("faceSlider").addEventListener("input", function () {
     // add the new shape to the scene
     scene.add(currentPolyhedron);
 
+    const label = document.getElementById("label");
     // update the text to show the current shape
     switch (sliderValue) {
         case "0":
-            document.getElementById("label").innerHTML = "Tetrahedron";
+            label = "Tetrahedron";
             break;
         case "1":
-            document.getElementById("label").innerHTML = "Cube";
+            label = "Cube";
             break;
         case "2":
-            document.getElementById("label").innerHTML = "Octahedron";
+            label = "Octahedron";
             break;
         case "3":
-            document.getElementById("label").innerHTML = "Dodecahedron";
+            label = "Dodecahedron";
             break;
         case "4":
-            document.getElementById("label").innerHTML = "Icosahedron";
+            label = "Icosahedron";
             break;
     };
 
+});
+
+document.querySelector('.toggle-switch').addEventListener('click', function () {
+    document.querySelector('.toggle-switch').classList.toggle('active');
+
+    // if the toggle switch is active, change the current effect to the ascii effect
+    if (document.querySelector('.toggle-switch').classList.contains('active')) {
+        document.body.removeChild(ascii.domElement);
+        currentEffect = renderer;
+        document.body.appendChild(currentEffect.domElement);
+    }
+    // if the toggle switch is not active, change the current effect to the normal effect
+    else {
+        document.body.removeChild(renderer.domElement);
+        currentEffect = ascii;
+        document.body.appendChild(currentEffect.domElement);
+    };
 });
 
 function init() {
@@ -51,7 +69,7 @@ function init() {
     scene = new THREE.Scene();
     scene.background = new THREE.Color(0, 0, 0);
 
-    const pointLight1 = new THREE.PointLight(0xffffff);
+    const pointLight1 = new THREE.PointLight(0xffffff1);
     pointLight1.position.set(500, 500, 500);
     scene.add(pointLight1);
 
@@ -86,17 +104,19 @@ function init() {
     renderer = new THREE.WebGLRenderer();
     renderer.setSize(window.innerWidth, window.innerHeight);
 
-    effect = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
-    effect.setSize(window.innerWidth, window.innerHeight);
-    effect.domElement.style.color = 'white';
-    effect.domElement.style.backgroundColor = 'black';
+    ascii = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
+    ascii.setSize(window.innerWidth, window.innerHeight);
+    ascii.domElement.style.color = 'white';
+    ascii.domElement.style.backgroundColor = 'black';
 
     // Special case: append effect.domElement, instead of renderer.domElement.
     // AsciiEffect creates a custom domElement (a div container) where the ASCII elements are placed.
 
-    document.body.appendChild(effect.domElement);
+    currentEffect = ascii;
 
-    controls = new TrackballControls(camera, effect.domElement);
+    document.body.appendChild(currentEffect.domElement);
+
+    controls = new TrackballControls(camera, currentEffect.domElement);
 
     //
 
@@ -110,7 +130,7 @@ function onWindowResize() {
     camera.updateProjectionMatrix();
 
     renderer.setSize(window.innerWidth, window.innerHeight);
-    effect.setSize(window.innerWidth, window.innerHeight);
+    ascii.setSize(window.innerWidth, window.innerHeight);
 
 }
 
@@ -132,6 +152,6 @@ function render() {
 
     controls.update();
 
-    effect.render(scene, camera);
+    currentEffect.render(scene, camera);
 
 }
