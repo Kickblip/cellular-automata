@@ -46,21 +46,23 @@ document.getElementById("faceSlider").addEventListener("input", function () {
 document.querySelector('.toggle-switch').addEventListener('click', function () {
     document.querySelector('.toggle-switch').classList.toggle('active');
 
-    // if the toggle switch is active, change the current effect to the ascii effect
     if (document.querySelector('.toggle-switch').classList.contains('active')) {
-        document.body.removeChild(ascii.domElement);
-        currentEffect = renderer;
-        document.body.appendChild(currentEffect.domElement);
-    }
-    // if the toggle switch is not active, change the current effect to the normal effect
-    else {
         document.body.removeChild(renderer.domElement);
         currentEffect = ascii;
         document.body.appendChild(currentEffect.domElement);
+        controls = new TrackballControls(camera, currentEffect.domElement);
+    }
+    else {
+        document.body.removeChild(ascii.domElement);
+        currentEffect = renderer;
+        document.body.appendChild(currentEffect.domElement);
+        controls = new TrackballControls(camera, currentEffect.domElement);
     };
 });
 
 function init() {
+
+    document.querySelector('.toggle-switch').classList.toggle('active');
 
     camera = new THREE.PerspectiveCamera(70, window.innerWidth / window.innerHeight, 1, 1000);
     camera.position.y = 150;
