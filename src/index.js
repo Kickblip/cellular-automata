@@ -25,19 +25,19 @@ document.getElementById("faceSlider").addEventListener("input", function () {
     // update the text to show the current shape
     switch (sliderValue) {
         case "0":
-            label = "Tetrahedron";
+            label.innerHTML = "Tetrahedron";
             break;
         case "1":
-            label = "Cube";
+            label.innerHTML = "Cube";
             break;
         case "2":
-            label = "Octahedron";
+            label.innerHTML = "Octahedron";
             break;
         case "3":
-            label = "Dodecahedron";
+            label.innerHTML = "Dodecahedron";
             break;
         case "4":
-            label = "Icosahedron";
+            label.innerHTML = "Icosahedron";
             break;
     };
 
