@@ -1,4 +1,4 @@
-# Rendering Polyhedrons in 3D Space
+# Rendering Polyhedra in 3D Space
 
 ![image](https://user-images.githubusercontent.com/54160850/220791630-767f3aad-ec87-4f0a-b2ca-cb190f615023.png)
 
