@@ -82,7 +82,10 @@ function init() {
 
 
     // add a tetrahedron to the scene
-    const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+    // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+
+    const tetrahedron = new THREE.PolyhedronGeometry(POLYHEDRA.Tetrahedron.vertex, POLYHEDRA.Tetrahedron.face, 200, 0);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
