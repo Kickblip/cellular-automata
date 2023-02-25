@@ -4,7 +4,7 @@
  * Converted to JSON by Lee Stemkoski
  */
 
-export default POLYHEDRA = {
+const POLYHEDRA = {
 
     /* Platonic Solids */
 
@@ -1029,3 +1029,5 @@ export default POLYHEDRA = {
     }
 
 };
+
+export default POLYHEDRA;

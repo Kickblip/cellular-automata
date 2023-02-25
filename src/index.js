@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import POLYHEDRA from './polyhedra.js';
 
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
@@ -60,6 +61,124 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
     };
 });
 
+function createPolyhedronMesh(polyhedron) {
+
+    const geometry = new THREE.BufferGeometry();
+
+    // extract vertex data from JSON object
+    const vertexData = polyhedron.vertex;
+    const vertices = new Float32Array(vertexData.length);
+    for (let i = 0; i < vertexData.length; i++) {
+        vertices[i] = vertexData[i];
+    }
+
+    // create buffer attribute for vertex positions
+    const positionAttribute = new THREE.BufferAttribute(vertices, 3);
+    geometry.setAttribute('position', positionAttribute);
+
+    // extract index data from JSON object
+    const indexData = polyhedron.face;
+    const indices = new Uint16Array(indexData.length);
+    for (let i = 0; i < indexData.length; i++) {
+        indices[i] = indexData[i];
+    }
+
+    // create buffer attribute for face indices
+    const indexAttribute = new THREE.BufferAttribute(indices, 1);
+    geometry.setIndex(indexAttribute);
+
+
+    const material = new THREE.MeshPhongMaterial({ flatShading: true });
+    const mesh = new THREE.Mesh(geometry, material);
+
+    return mesh;
+
+};
+function polyhedronDataToMesh(data) {
+    const polyhedron = new THREE.Object3D();
+
+    // convert vertex data to THREE.js vectors
+    const vertices = data.vertex.map(v => new THREE.Vector3().fromArray(v).multiplyScalar(100));
+    const vertexGeometry = new THREE.SphereGeometry(6, 12, 6);
+    const vertexMaterial = new THREE.MeshLambertMaterial({ color: 0x222244 });
+    const vertexSingleMesh = new THREE.Mesh(vertexGeometry);
+
+    const vertexAmalgam = new THREE.BufferGeometry();
+    for (let i = 0; i < data.vertex.length; i++) {
+        const vMesh = vertexSingleMesh.clone();
+        vMesh.position.copy(vertices[i]);
+        vertexAmalgam.merge(vMesh.geometry, vMesh.matrix);
+    }
+    const vertexMesh = new THREE.Mesh(vertexAmalgam, vertexMaterial);
+    polyhedron.add(vertexMesh);
+
+    // convert edge data to cylinders
+    const edgeMaterial = new THREE.MeshLambertMaterial({ color: 0x666666 });
+    const edgeAmalgam = new THREE.BufferGeometry();
+    for (let i = 0; i < data.edge.length; i++) {
+        const index0 = data.edge[i][0];
+        const index1 = data.edge[i][1];
+        const eMesh = cylinderMesh(vertices[index0], vertices[index1], edgeMaterial);
+        edgeAmalgam.merge(eMesh.geometry, eMesh.matrix);
+    }
+    const edgeMesh = new THREE.Mesh(edgeAmalgam, edgeMaterial);
+    polyhedron.add(edgeMesh);
+
+    // convert face data to a single (triangulated) geometry
+    const faceMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        vertexColors: THREE.FaceColors,
+        side: THREE.FrontSide,
+        transparent: true,
+        opacity: 0.8
+    });
+    const faceColors = {
+        3: new THREE.Color(0xcc0000),
+        4: new THREE.Color(0x00cc00),
+        5: new THREE.Color(0x0000cc),
+        6: new THREE.Color(0xcccc00),
+        7: new THREE.Color(0x999999),
+        8: new THREE.Color(0x990099),
+        9: new THREE.Color(0xff6600),
+        10: new THREE.Color(0x6666ff)
+    };
+
+    const geometry = new THREE.BufferGeometry();
+    geometry.vertices = vertices;
+    let faceIndex = 0;
+    for (let faceNum = 0; faceNum < data.face.length; faceNum++) {
+        for (let i = 0; i < data.face[faceNum].length - 2; i++) {
+            geometry.faces[faceIndex] = new THREE.Face3(
+                data.face[faceNum][0],
+                data.face[faceNum][i + 1],
+                data.face[faceNum][i + 2]
+            );
+            geometry.faces[faceIndex].color = faceColors[data.face[faceNum].length];
+            faceIndex++;
+        }
+    }
+
+    geometry.computeFaceNormals();
+    geometry.computeVertexNormals();
+
+    const faces = new THREE.Mesh(geometry, faceMaterial);
+    faces.scale.multiplyScalar(1.01);
+    polyhedron.add(faces);
+
+    const interiorMaterial = new THREE.MeshBasicMaterial({
+        color: 0xffffff,
+        vertexColors: THREE.FaceColors,
+        side: THREE.BackSide
+    });
+
+    const interiorFaces = new THREE.Mesh(geometry, interiorMaterial);
+    interiorFaces.scale.multiplyScalar(0.99);
+    polyhedron.add(interiorFaces);
+
+    return polyhedron;
+}
+
+
 function init() {
 
     document.querySelector('.toggle-switch').classList.toggle('active');
@@ -84,8 +203,7 @@ function init() {
     // add a tetrahedron to the scene
     // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
 
-
-    const tetrahedron = new THREE.PolyhedronGeometry(POLYHEDRA.Tetrahedron.vertex, POLYHEDRA.Tetrahedron.face, 200, 0);
+    const tetrahedron = createPolyhedronMesh(POLYHEDRA.Tetrahedron);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
@@ -106,7 +224,7 @@ function init() {
 
     scene.add(currentPolyhedron);
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     ascii = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
