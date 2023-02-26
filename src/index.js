@@ -64,10 +64,7 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
 
 function createPolyhedronMesah(data) {
 
-    // const vertices = data.vertex;
-    // const indices = data.face;
-
-
+    // TETRAHEDRON
     // const vertices = [
     //     1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1
     // ];
@@ -75,6 +72,9 @@ function createPolyhedronMesah(data) {
     // const indices = [
     //     2, 1, 0, 0, 3, 2, 1, 3, 0, 2, 3, 1
     // ];
+
+
+    // CUBE
 
     // const vertices = [
     //     -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
@@ -90,25 +90,33 @@ function createPolyhedronMesah(data) {
     //     4, 5, 6, 6, 7, 4
     // ];
 
-    const vertices = [
-        0, 0, 1.414214,
-        1.414214, 0, 0,
-        0, 1.414214, 0,
-        -1.414214, 0, 0,
-        0, -1.414214, 0,
-        0, 0, -1.414214
-    ];
+    // OCTAHEDRON
 
-    const indices = [
-        0, 1, 2,
-        0, 2, 3,
-        0, 3, 4,
-        0, 4, 1,
-        1, 4, 5,
-        1, 5, 2,
-        2, 5, 3,
-        3, 5, 4
-    ];
+    // const vertices = [
+    //     0, 0, 1.414214,
+    //     1.414214, 0, 0,
+    //     0, 1.414214, 0,
+    //     -1.414214, 0, 0,
+    //     0, -1.414214, 0,
+    //     0, 0, -1.414214
+    // ];
+
+    // const indices = [
+    //     0, 1, 2,
+    //     0, 2, 3,
+    //     0, 3, 4,
+    //     0, 4, 1,
+    //     1, 4, 5,
+    //     1, 5, 2,
+    //     2, 5, 3,
+    //     3, 5, 4
+    // ];
+
+    const targetPolyhedron = "Rhombicubocahedron";
+
+    const vertices = POLYHEDRA[targetPolyhedron].vertex.flat();
+
+    const indices = POLYHEDRA[targetPolyhedron].face.flat();
 
     /*
     The list of eight triangular faces of the octahedron, where each face is represented by a list 
