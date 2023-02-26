@@ -76,27 +76,52 @@ function createPolyhedronMesah(data) {
     //     2, 1, 0, 0, 3, 2, 1, 3, 0, 2, 3, 1
     // ];
 
+    // const vertices = [
+    //     -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
+    //     -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
+    // ];
+
+    // const indices = [
+    //     2, 1, 0, 0, 3, 2,
+    //     0, 4, 7, 7, 3, 0,
+    //     0, 1, 5, 5, 4, 0,
+    //     1, 2, 6, 6, 5, 1,
+    //     2, 3, 7, 7, 6, 2,
+    //     4, 5, 6, 6, 7, 4
+    // ];
+
     const vertices = [
-        -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
-        -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
+        0, 0, 1.414214,
+        1.414214, 0, 0,
+        0, 1.414214, 0,
+        -1.414214, 0, 0,
+        0, -1.414214, 0,
+        0, 0, -1.414214
     ];
 
     const indices = [
-        2, 1, 0, 0, 3, 2,
-        0, 4, 7, 7, 3, 0,
-        0, 1, 5, 5, 4, 0,
-        1, 2, 6, 6, 5, 1,
-        2, 3, 7, 7, 6, 2,
-        4, 5, 6, 6, 7, 4
+        0, 1, 2,
+        0, 2, 3,
+        0, 3, 4,
+        0, 4, 1,
+        1, 4, 5,
+        1, 5, 2,
+        2, 5, 3,
+        3, 5, 4
     ];
+
+    /*
+    The list of eight triangular faces of the octahedron, where each face is represented by a list 
+    of three vertex indices that correspond to the vertices that form the corners of the triangular face.
+    */
 
     const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
 
     const material = new THREE.MeshPhongMaterial({ flatShading: true });
 
-    const tetrahedron = new THREE.Mesh(geometry, material);
+    const polyhedron = new THREE.Mesh(geometry, material);
 
-    return tetrahedron;
+    return polyhedron;
 
 
 }
