@@ -64,21 +64,17 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
 
 function createPolyhedronMesah(data) {
 
-    // TETRAHEDRON
-    // const vertices = [
-    //     1, 1, 1, -1, -1, 1, -1, 1, -1, 1, -1, -1
-    // ];
-
-    // const indices = [
-    //     2, 1, 0, 0, 3, 2, 1, 3, 0, 2, 3, 1
-    // ];
-
-
     // CUBE
 
     // const vertices = [
-    //     -1, -1, -1, 1, -1, -1, 1, 1, -1, -1, 1, -1,
-    //     -1, -1, 1, 1, -1, 1, 1, 1, 1, -1, 1, 1,
+    //     -1, -1, -1,
+    //     1, -1, -1,
+    //     1, 1, -1,
+    //     -1, 1, -1,
+    //     -1, -1, 1,
+    //     1, -1, 1,
+    //     1, 1, 1,
+    //     -1, 1, 1,
     // ];
 
     // const indices = [
@@ -90,40 +86,72 @@ function createPolyhedronMesah(data) {
     //     4, 5, 6, 6, 7, 4
     // ];
 
-    // OCTAHEDRON
-
     // const vertices = [
-    //     0, 0, 1.414214,
-    //     1.414214, 0, 0,
-    //     0, 1.414214, 0,
-    //     -1.414214, 0, 0,
-    //     0, -1.414214, 0,
-    //     0, 0, -1.414214
+    //     0, 0, 1.224745, // A-0
+    //     1.154701, 0, 0.4082483, // B-1
+    //     -0.5773503, 1, 0.4082483, // C-2
+    //     -0.5773503, -1, 0.4082483, // D-3
+    //     0.5773503, 1, -0.4082483, // E-4
+    //     0.5773503, -1, -0.4082483, // F-5
+    //     -1.154701, 0, -0.4082483, // G-6
+    //     0, 0, -1.224745 // H-7
     // ];
 
-    // const indices = [
-    //     0, 1, 2,
-    //     0, 2, 3,
-    //     0, 3, 4,
-    //     0, 4, 1,
-    //     1, 4, 5,
-    //     1, 5, 2,
-    //     2, 5, 3,
-    //     3, 5, 4
-    // ];
+    const vertices = data.vertex.flat();
 
-    const targetPolyhedron = "Rhombicubocahedron";
+    const indices = data.face.flat();
 
-    const vertices = POLYHEDRA[targetPolyhedron].vertex.flat();
 
-    const indices = POLYHEDRA[targetPolyhedron].face.flat();
+
+    // // convert vertex data to THREE.js vectors
+    // const vertex = []
+    // for (let i = 0; i < data.vertex.length; i++)
+    //     vertex.push(new THREE.Vector3(data.vertex[i][0], data.vertex[i][1], data.vertex[i][2]).multiplyScalar(100));
+
+    // use the vertices and indices to create the faces of the cube. 
+
+    // const points = [
+    //     (0, 0, 1.070466),
+    //     (0.7136442, 0, 0.7978784),
+    //     (-0.3568221, 0.618034, 0.7978784),
+    //     (-0.3568221, -0.618034, 0.7978784),
+    //     (0.7978784, 0.618034, 0.3568221),
+    //     (0.7978784, -0.618034, 0.3568221),
+    //     (-0.9341724, 0.381966, 0.3568221),
+    //     (0.1362939, 1, 0.3568221),
+    //     (0.1362939, -1, 0.3568221),
+    //     (-0.9341724, -0.381966, 0.3568221),
+    //     (0.9341724, 0.381966, -0.3568221),
+    //     (0.9341724, -0.381966, -0.3568221),
+    //     (-0.7978784, 0.618034, -0.3568221),
+    //     (-0.1362939, 1, -0.3568221),
+    //     (-0.1362939, -1, -0.3568221),
+    //     (-0.7978784, -0.618034, -0.3568221),
+    //     (0.3568221, 0.618034, -0.7978784),
+    //     (0.3568221, -0.618034, -0.7978784),
+    //     (-0.7136442, 0, -0.7978784),
+    //     (0, 0, -1.070466),
+    // ]
+
+    // How do I create a polyhedron from lists
+
+
+    const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
+
+    // create a buffer geometry from the vertices and indices
+    // const geometry = new THREE.BufferGeometry();
+    // geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([vertices]), 3));
+    // geometry.setIndex(new THREE.BufferAttribute(new Uint32Array([indices]), 5));
+
+
+
 
     /*
     The list of eight triangular faces of the octahedron, where each face is represented by a list 
     of three vertex indices that correspond to the vertices that form the corners of the triangular face.
     */
 
-    const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
+    // const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
 
     const material = new THREE.MeshPhongMaterial({ flatShading: true });
 
@@ -159,7 +187,7 @@ function init() {
     // add a tetrahedron to the scene
     // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
 
-    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Tetrahedron);
+    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Cube);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
