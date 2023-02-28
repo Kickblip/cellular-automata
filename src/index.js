@@ -91,30 +91,61 @@ function createPolyhedronMesah(data) {
     const indices = data.face;
 
     // calculate a center coordinate point for each face using the component wise average of the vertices
-    const faceCenters = indices.map(face => {
-        // replace each vertex index with the actual vertex coordinates
-        const faceVertices = face.map(vertexIndex => vertices[vertexIndex]);
-        // calculate the average of each component of the vertices
-        const faceCenter = faceVertices.reduce((acc, vertex) => {
-            return acc.map((component, index) => component + vertex[index]);
-        }, [0, 0, 0]).map(component => component / faceVertices.length);
-
-        return faceCenter;
+    const faceCenters = indices.map((face) => {
+        if (face.length > 3) {
+            // replace each vertex index with the actual vertex coordinates
+            const faceVertices = face.map(vertexIndex => vertices[vertexIndex]);
+            // calculate the average of each component of the vertices
+            const faceCenter = faceVertices.reduce((acc, vertex) => {
+                return acc.map((component, index) => component + vertex[index]);
+            }, [0, 0, 0]).map(component => component / faceVertices.length);
+            // return the face center coordinates to the faceCenters array
+            return faceCenter;
+        } else {
+            // if there are 3 vertices in the face, skip the face
+            return;
+        };
     });
 
-    // add the face centers to the vertices
-    const allVertices = vertices.concat(faceCenters);
+    // add new coordinates to the vertices array
+    const faceIndicesStart = vertices.length - 1;
+    vertices.push(...faceCenters);
 
-    // create a new array of indices that includes the face centers
-    const allIndices = indices.map(face => face.concat(face.map(vertexIndex => vertexIndex + vertices.length)));
+    for (let i = 0; i < indices.length; i++) {
+        if (indices[i].length > 3) {
+            const newFaceIndices = [];
+            // if there are more than 3 vertices in the face, iterate through it and break it into the triangles
+            for (let j = 0; j < indices[i].length; j++) {
+                // [0, 1, 4, 7, 2] [coordinates of center of face]
+                // [0, X, 1] [1, X, 4] [4, X, 7] [7, X, 2] [2, X, 0] where X is the index of the center of the face
+                const currentVertex = indices[i][j];
+                const nextVertex = indices[i][j + 1] || indices[i][0];
+                // faces and face center indices are in the same order
+                const faceCenterIndex = faceIndicesStart + i + 1;
+
+                // break the face array into multiple triangle arrays
+                newFaceIndices.push([currentVertex, faceCenterIndex, nextVertex]);
+
+            };
+            // replace the face array with the new triangle arrays
+            indices[i] = newFaceIndices;
+        };
+    };
+
+    // flatten the indices array and the vertices array
+    const flattenedIndices = new Uint32Array([indices.flat()]);
+    const flattenedVertices = new Float32Array([vertices.flat()]);
 
 
     console.log(vertices);
     console.log(indices);
     console.log(faceCenters);
 
-    const geometry = new THREE.BoxGeometry();
 
+    // create a new polyhedron geometry using the flattened indices and vertices arrays
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(flattenedVertices, 3));
+    geometry.setIndex(new THREE.BufferAttribute(flattenedIndices, 1));
 
 
 
