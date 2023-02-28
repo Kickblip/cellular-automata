@@ -64,94 +64,59 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
 
 function createPolyhedronMesah(data) {
 
-    // CUBE
+    const points = [
+        (0, 0, 1.070466),
+        (0.7136442, 0, 0.7978784),
+        (-0.3568221, 0.618034, 0.7978784),
+        (-0.3568221, -0.618034, 0.7978784),
+        (0.7978784, 0.618034, 0.3568221),
+        (0.7978784, -0.618034, 0.3568221),
+        (-0.9341724, 0.381966, 0.3568221),
+        (0.1362939, 1, 0.3568221),
+        (0.1362939, -1, 0.3568221),
+        (-0.9341724, -0.381966, 0.3568221),
+        (0.9341724, 0.381966, -0.3568221),
+        (0.9341724, -0.381966, -0.3568221),
+        (-0.7978784, 0.618034, -0.3568221),
+        (-0.1362939, 1, -0.3568221),
+        (-0.1362939, -1, -0.3568221),
+        (-0.7978784, -0.618034, -0.3568221),
+        (0.3568221, 0.618034, -0.7978784),
+        (0.3568221, -0.618034, -0.7978784),
+        (-0.7136442, 0, -0.7978784),
+        (0, 0, -1.070466),
+    ];
 
-    // const vertices = [
-    //     -1, -1, -1,
-    //     1, -1, -1,
-    //     1, 1, -1,
-    //     -1, 1, -1,
-    //     -1, -1, 1,
-    //     1, -1, 1,
-    //     1, 1, 1,
-    //     -1, 1, 1,
-    // ];
+    const vertices = data.vertex;
+    const indices = data.face;
 
-    // const indices = [
-    //     2, 1, 0, 0, 3, 2,
-    //     0, 4, 7, 7, 3, 0,
-    //     0, 1, 5, 5, 4, 0,
-    //     1, 2, 6, 6, 5, 1,
-    //     2, 3, 7, 7, 6, 2,
-    //     4, 5, 6, 6, 7, 4
-    // ];
+    // calculate a center coordinate point for each face using the component wise average of the vertices
+    const faceCenters = indices.map(face => {
+        // replace each vertex index with the actual vertex coordinates
+        const faceVertices = face.map(vertexIndex => vertices[vertexIndex]);
+        // calculate the average of each component of the vertices
+        const faceCenter = faceVertices.reduce((acc, vertex) => {
+            return acc.map((component, index) => component + vertex[index]);
+        }, [0, 0, 0]).map(component => component / faceVertices.length);
 
-    // const vertices = [
-    //     0, 0, 1.224745, // A-0
-    //     1.154701, 0, 0.4082483, // B-1
-    //     -0.5773503, 1, 0.4082483, // C-2
-    //     -0.5773503, -1, 0.4082483, // D-3
-    //     0.5773503, 1, -0.4082483, // E-4
-    //     0.5773503, -1, -0.4082483, // F-5
-    //     -1.154701, 0, -0.4082483, // G-6
-    //     0, 0, -1.224745 // H-7
-    // ];
+        return faceCenter;
+    });
 
-    const vertices = data.vertex.flat();
+    // add the face centers to the vertices
+    const allVertices = vertices.concat(faceCenters);
 
-    const indices = data.face.flat();
-
-
-
-    // // convert vertex data to THREE.js vectors
-    // const vertex = []
-    // for (let i = 0; i < data.vertex.length; i++)
-    //     vertex.push(new THREE.Vector3(data.vertex[i][0], data.vertex[i][1], data.vertex[i][2]).multiplyScalar(100));
-
-    // use the vertices and indices to create the faces of the cube. 
-
-    // const points = [
-    //     (0, 0, 1.070466),
-    //     (0.7136442, 0, 0.7978784),
-    //     (-0.3568221, 0.618034, 0.7978784),
-    //     (-0.3568221, -0.618034, 0.7978784),
-    //     (0.7978784, 0.618034, 0.3568221),
-    //     (0.7978784, -0.618034, 0.3568221),
-    //     (-0.9341724, 0.381966, 0.3568221),
-    //     (0.1362939, 1, 0.3568221),
-    //     (0.1362939, -1, 0.3568221),
-    //     (-0.9341724, -0.381966, 0.3568221),
-    //     (0.9341724, 0.381966, -0.3568221),
-    //     (0.9341724, -0.381966, -0.3568221),
-    //     (-0.7978784, 0.618034, -0.3568221),
-    //     (-0.1362939, 1, -0.3568221),
-    //     (-0.1362939, -1, -0.3568221),
-    //     (-0.7978784, -0.618034, -0.3568221),
-    //     (0.3568221, 0.618034, -0.7978784),
-    //     (0.3568221, -0.618034, -0.7978784),
-    //     (-0.7136442, 0, -0.7978784),
-    //     (0, 0, -1.070466),
-    // ]
-
-    // How do I create a polyhedron from lists
+    // create a new array of indices that includes the face centers
+    const allIndices = indices.map(face => face.concat(face.map(vertexIndex => vertexIndex + vertices.length)));
 
 
-    const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
+    console.log(vertices);
+    console.log(indices);
+    console.log(faceCenters);
 
-    // create a buffer geometry from the vertices and indices
-    // const geometry = new THREE.BufferGeometry();
-    // geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array([vertices]), 3));
-    // geometry.setIndex(new THREE.BufferAttribute(new Uint32Array([indices]), 5));
+    const geometry = new THREE.BoxGeometry();
 
 
 
-
-    /*
-    The list of eight triangular faces of the octahedron, where each face is represented by a list 
-    of three vertex indices that correspond to the vertices that form the corners of the triangular face.
-    */
-
-    // const geometry = new THREE.PolyhedronGeometry(vertices, indices, 200, 0);
 
     const material = new THREE.MeshPhongMaterial({ flatShading: true });
 
@@ -187,7 +152,7 @@ function init() {
     // add a tetrahedron to the scene
     // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
 
-    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Cube);
+    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Dodecahedron);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
