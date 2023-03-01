@@ -108,8 +108,11 @@ function createPolyhedronMesah(data) {
     });
 
     // add new coordinates to the vertices array
-    const faceIndicesStart = vertices.length - 1;
-    vertices.push(...faceCenters);
+    let faceIndicesStart;
+    if (faceCenters) {
+        faceIndicesStart = vertices.length - 1;
+        vertices.push(...faceCenters);
+    };
 
     for (let i = 0; i < indices.length; i++) {
         if (indices[i].length > 3) {
@@ -133,19 +136,26 @@ function createPolyhedronMesah(data) {
     };
 
     // flatten the indices array and the vertices array
-    const flattenedIndices = new Uint32Array([indices.flat()]);
-    const flattenedVertices = new Float32Array([vertices.flat()]);
+    const flattenedIndices = new Uint32Array([indices.flat(Infinity)]);
+    const flattenedVertices = new Float32Array([vertices.flat(Infinity)]);
+    // const flattenedIndices = indices.flat(Infinity);
+    // const flattenedVertices = vertices.flat(Infinity);
 
 
     console.log(vertices);
     console.log(indices);
     console.log(faceCenters);
+    console.log(flattenedIndices);
+    console.log(flattenedVertices);
 
 
     // create a new polyhedron geometry using the flattened indices and vertices arrays
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(flattenedVertices, 3));
     geometry.setIndex(new THREE.BufferAttribute(flattenedIndices, 1));
+
+    // // create polyhedron geometry
+    // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
 
 
 
@@ -249,9 +259,9 @@ function animate() {
 
 function render() {
 
-    currentPolyhedron.position.y += 0.005;
-    currentPolyhedron.rotation.x += 0.005;
-    currentPolyhedron.rotation.z += 0.005;
+    // currentPolyhedron.position.y += 0.005; // change to rotation?
+    // currentPolyhedron.rotation.x += 0.005;
+    // currentPolyhedron.rotation.z += 0.005;
 
     controls.update();
 
