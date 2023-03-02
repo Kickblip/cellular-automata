@@ -101,10 +101,8 @@ function createPolyhedronMesah(data) {
             }, [0, 0, 0]).map(component => component / faceVertices.length);
             // return the face center coordinates to the faceCenters array
             return faceCenter;
-        } else {
-            // if there are 3 vertices in the face, skip the face
-            return;
-        };
+        }
+        // if there are 3 vertices in the face, skip the face
     });
 
     // add new coordinates to the vertices array
@@ -147,6 +145,8 @@ function createPolyhedronMesah(data) {
     console.log(faceCenters);
     console.log(flattenedIndices);
     console.log(flattenedVertices);
+
+    // PROBLEM: arrays are being flatted properly, but the resulting geometry is not being rendered properly
 
 
     // create a new polyhedron geometry using the flattened indices and vertices arrays
