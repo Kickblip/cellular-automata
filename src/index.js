@@ -134,28 +134,59 @@ function createPolyhedronMesah(data) {
     };
 
     // flatten the indices array and the vertices array
-    const flattenedIndices = new Uint32Array([indices.flat(Infinity)]);
-    const flattenedVertices = new Float32Array([vertices.flat(Infinity)]);
-    // const flattenedIndices = indices.flat(Infinity);
-    // const flattenedVertices = vertices.flat(Infinity);
+    // const flattenedIndices = new Uint32Array([indices.flat(Infinity)]);
+    // const flattenedVertices = new Float32Array([vertices.flat(Infinity)]);
+    const flattenedIndices = indices.flat(Infinity);
+    const flattenedVertices = vertices.flat(Infinity);
+
+    // Dodecahedron
+    // 12 faces
+    // 20 vertices
+    // pentagonal faces
+    // 3 coordinates per vertex
+    // center point coordinates added to the end of the vertex array
 
 
-    console.log(vertices);
-    console.log(indices);
-    console.log(faceCenters);
-    console.log(flattenedIndices);
-    console.log(flattenedVertices);
+    console.log(vertices); // 3 coordinates for 20 vertices and 12 face vertices - 96 vertices total
+    console.log(indices); // original 20 vertices and 12 face vertices
+    // 3 values per triangle - 5 triangles per face - 12 faces - 60 triangles - 180 indices
+
+    // convert the index number to letter in the alphabet and console log the entire array
+    // do it so that 0=A, 1=B, 2=C, etc.
+
+    // iterate through the entire array and convert the numbers to letter then print the new array of letters
+
+    let lettersIndex = [];
+    for (let i = 0; i < flattenedIndices.length; i++) {
+        const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+        lettersIndex.push(letters[flattenedIndices[i]]);
+    };
+    lettersIndex = lettersIndex.reduce((acc, letter, index) => {
+        if (index % 3 === 0) {
+            acc.push([letter]);
+        } else {
+            acc[acc.length - 1].push(letter);
+        }
+        return acc;
+    }, []);
+
+    console.log(lettersIndex);
+
+
+    // console.log(faceCenters);
+    // console.log(flattenedIndices);
+    // console.log(flattenedVertices);
 
     // PROBLEM: arrays are being flatted properly, but the resulting geometry is not being rendered properly
 
 
     // create a new polyhedron geometry using the flattened indices and vertices arrays
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(flattenedVertices, 3));
-    geometry.setIndex(new THREE.BufferAttribute(flattenedIndices, 1));
+    // const geometry = new THREE.BufferGeometry();
+    // geometry.setAttribute('position', new THREE.BufferAttribute(flattenedVertices, 3));
+    // geometry.setIndex(new THREE.BufferAttribute(flattenedIndices, 1));
 
-    // // create polyhedron geometry
-    // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+    // create polyhedron geometry
+    const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
 
 
 
@@ -193,7 +224,7 @@ function init() {
     // add a tetrahedron to the scene
     // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
 
-    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Dodecahedron);
+    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Cube);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
@@ -221,9 +252,6 @@ function init() {
     ascii.setSize(window.innerWidth, window.innerHeight);
     ascii.domElement.style.color = 'white';
     ascii.domElement.style.backgroundColor = 'black';
-
-    // Special case: append effect.domElement, instead of renderer.domElement.
-    // AsciiEffect creates a custom domElement (a div container) where the ASCII elements are placed.
 
     currentEffect = ascii;
 
@@ -259,7 +287,7 @@ function animate() {
 
 function render() {
 
-    // currentPolyhedron.position.y += 0.005; // change to rotation?
+    // currentPolyhedron.rotation.y += 0.005;
     // currentPolyhedron.rotation.x += 0.005;
     // currentPolyhedron.rotation.z += 0.005;
 
