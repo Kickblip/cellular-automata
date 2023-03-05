@@ -151,10 +151,7 @@ function createPolyhedronMesah(data) {
     console.log(indices); // original 20 vertices and 12 face vertices
     // 3 values per triangle - 5 triangles per face - 12 faces - 60 triangles - 180 indices
 
-    // convert the index number to letter in the alphabet and console log the entire array
-    // do it so that 0=A, 1=B, 2=C, etc.
 
-    // iterate through the entire array and convert the numbers to letter then print the new array of letters
 
     let lettersIndex = [];
     for (let i = 0; i < flattenedIndices.length; i++) {
@@ -170,23 +167,26 @@ function createPolyhedronMesah(data) {
         return acc;
     }, []);
 
-    console.log(lettersIndex);
+    // console.log(lettersIndex);
 
 
     // console.log(faceCenters);
-    // console.log(flattenedIndices);
-    // console.log(flattenedVertices);
+    console.log(flattenedVertices);
+    console.log(flattenedIndices);
 
     // PROBLEM: arrays are being flatted properly, but the resulting geometry is not being rendered properly
 
 
     // create a new polyhedron geometry using the flattened indices and vertices arrays
-    // const geometry = new THREE.BufferGeometry();
-    // geometry.setAttribute('position', new THREE.BufferAttribute(flattenedVertices, 3));
-    // geometry.setIndex(new THREE.BufferAttribute(flattenedIndices, 1));
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flattenedVertices), 3));
+    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 1));
 
     // create polyhedron geometry
-    const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+    // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+
+    // Compute the face normals and vertex normals
+    geometry.computeVertexNormals();
 
 
 
