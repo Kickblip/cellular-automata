@@ -1,5 +1,7 @@
 # Rendering Polyhedra in 3D Space
 
+## Update: Version 2.0 - changes to geometry system and new hints!
+
 ![image](https://user-images.githubusercontent.com/54160850/220791630-767f3aad-ec87-4f0a-b2ca-cb190f615023.png)
 
 ![image](https://user-images.githubusercontent.com/54160850/220791651-61a36917-f83c-4ce9-9901-332aa3124976.png)
