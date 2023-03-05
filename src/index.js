@@ -1,4 +1,5 @@
 import * as THREE from 'three';
+import POLYHEDRA from './polyhedra.js';
 
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
@@ -10,8 +11,26 @@ let polyhedrons, currentPolyhedron;
 init();
 animate();
 
+
+setTimeout(function () {
+    // if the slider value is 2 (initial value) after 2.5 seconds, slowly raise the opacity of the hint element
+    if (document.getElementById("faceSlider").value === "2") {
+        let opacity = 0;
+        const interval = setInterval(function () {
+            opacity += 0.1;
+            document.getElementById("hint").style.opacity = opacity;
+            if (opacity >= 1) {
+                clearInterval(interval);
+            };
+        }, 100);
+    }
+}, 2500);
+
 // get the value of the slider when it is changed
 document.getElementById("faceSlider").addEventListener("input", function () {
+    // hide the hint element
+    document.getElementById("hint").style.display = "none";
+
     // get the value of the slider
     let sliderValue = document.getElementById("faceSlider").value;
     // remove the current shape from the scene
@@ -60,6 +79,138 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
     };
 });
 
+
+const points = [
+    (0, 0, 1.070466),
+    (0.7136442, 0, 0.7978784),
+    (-0.3568221, 0.618034, 0.7978784),
+    (-0.3568221, -0.618034, 0.7978784),
+    (0.7978784, 0.618034, 0.3568221),
+    (0.7978784, -0.618034, 0.3568221),
+    (-0.9341724, 0.381966, 0.3568221),
+    (0.1362939, 1, 0.3568221),
+    (0.1362939, -1, 0.3568221),
+    (-0.9341724, -0.381966, 0.3568221),
+    (0.9341724, 0.381966, -0.3568221),
+    (0.9341724, -0.381966, -0.3568221),
+    (-0.7978784, 0.618034, -0.3568221),
+    (-0.1362939, 1, -0.3568221),
+    (-0.1362939, -1, -0.3568221),
+    (-0.7978784, -0.618034, -0.3568221),
+    (0.3568221, 0.618034, -0.7978784),
+    (0.3568221, -0.618034, -0.7978784),
+    (-0.7136442, 0, -0.7978784),
+    (0, 0, -1.070466),
+];
+
+function createPolyhedronMesah(data) {
+
+    const vertices = data.vertex;
+    const indices = data.face;
+
+    // calculate a center coordinate point for each face using the component wise average of the vertices
+    const faceCenters = indices.map((face) => {
+        if (face.length > 3) {
+            // replace each vertex index with the actual vertex coordinates
+            const faceVertices = face.map(vertexIndex => vertices[vertexIndex]);
+            // calculate the average of each component of the vertices
+            const faceCenter = faceVertices.reduce((acc, vertex) => {
+                return acc.map((component, index) => component + vertex[index]);
+            }, [0, 0, 0]).map(component => component / faceVertices.length);
+            // return the face center coordinates to the faceCenters array
+            return faceCenter;
+        }
+        // if the face has 3 vertices, skip the face
+        return null;
+    });
+
+    // remove null values from faceCenters array
+    for (let i = 0; i < faceCenters.length; i++) {
+        if (faceCenters[i] === null) {
+            faceCenters.splice(i, 1);
+            i--;
+        };
+    }
+
+
+    // add new coordinates to the vertices array
+    let faceIndicesStart;
+    if (faceCenters) {
+        faceIndicesStart = vertices.length - 1;
+        vertices.push(...faceCenters);
+    };
+
+    for (let i = 0; i < indices.length; i++) {
+        if (indices[i].length > 3) {
+            const newFaceIndices = [];
+            // if there are more than 3 vertices in the face, iterate through it and break it into the triangles
+            for (let j = 0; j < indices[i].length; j++) {
+                // [0, 1, 4, 7, 2] [coordinates of center of face]
+                // [0, X, 1] [1, X, 4] [4, X, 7] [7, X, 2] [2, X, 0] where X is the index of the center of the face
+                const currentVertex = indices[i][j];
+                const nextVertex = indices[i][j + 1] || indices[i][0];
+                // faces and face center indices are in the same order
+                const faceCenterIndex = faceIndicesStart + i + 1;
+
+                // break the face array into multiple triangle arrays
+                newFaceIndices.push([currentVertex, faceCenterIndex, nextVertex]);
+
+            };
+            // replace the face array with the new triangle arrays
+            indices[i] = newFaceIndices;
+        };
+    };
+
+    // flatten arrays so they can be used by the BufferGeometry
+    const flattenedIndices = indices.flat(Infinity);
+    const flattenedVertices = vertices.flat(Infinity);
+
+
+    console.log(vertices);
+    console.log(indices);
+    console.log(faceCenters);
+    console.log(flattenedVertices);
+    console.log(flattenedIndices);
+
+
+    // let lettersIndex = [];
+    // for (let i = 0; i < flattenedIndices.length; i++) {
+    //     const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    //     lettersIndex.push(letters[flattenedIndices[i]]);
+    // };
+    // lettersIndex = lettersIndex.reduce((acc, letter, index) => {
+    //     if (index % 3 === 0) {
+    //         acc.push([letter]);
+    //     } else {
+    //         acc[acc.length - 1].push(letter);
+    //     }
+    //     return acc;
+    // }, []);
+
+    // console.log(lettersIndex);
+
+
+
+    // create a new polyhedron geometry using the flattened indices and vertices arrays
+    const geometry = new THREE.BufferGeometry();
+    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flattenedVertices), 3));
+    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 3));
+
+    geometry.computeVertexNormals();
+
+    // create polyhedron geometry
+    // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+
+
+    const material = new THREE.MeshPhongMaterial({ flatShading: true });
+
+    const polyhedron = new THREE.Mesh(geometry, material);
+
+    return polyhedron;
+
+}
+
+
 function init() {
 
     document.querySelector('.toggle-switch').classList.toggle('active');
@@ -82,7 +233,9 @@ function init() {
 
 
     // add a tetrahedron to the scene
-    const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+    // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
+
+    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Tetrahedron);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
@@ -99,20 +252,19 @@ function init() {
     // add all the shapes to an array
     polyhedrons = [tetrahedron, cube, octahedron, dodecahedron, icosahedron];
 
+    console.log(polyhedrons);
+
     currentPolyhedron = polyhedrons[2];
 
     scene.add(currentPolyhedron);
 
-    renderer = new THREE.WebGLRenderer();
+    renderer = new THREE.WebGLRenderer({ antialias: true });
     renderer.setSize(window.innerWidth, window.innerHeight);
 
     ascii = new AsciiEffect(renderer, ' .:-+*=%@#', { invert: true });
     ascii.setSize(window.innerWidth, window.innerHeight);
     ascii.domElement.style.color = 'white';
     ascii.domElement.style.backgroundColor = 'black';
-
-    // Special case: append effect.domElement, instead of renderer.domElement.
-    // AsciiEffect creates a custom domElement (a div container) where the ASCII elements are placed.
 
     currentEffect = ascii;
 
@@ -148,7 +300,7 @@ function animate() {
 
 function render() {
 
-    currentPolyhedron.position.y += 0.005;
+    // currentPolyhedron.rotation.y += 0.005;
     currentPolyhedron.rotation.x += 0.005;
     currentPolyhedron.rotation.z += 0.005;
 
