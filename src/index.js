@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import POLYHEDRA from './polyhedra.js';
+import POLYHEDRA from '../dist/polyhedra.js';
 
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
@@ -80,29 +80,6 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
 });
 
 
-const points = [
-    (0, 0, 1.070466),
-    (0.7136442, 0, 0.7978784),
-    (-0.3568221, 0.618034, 0.7978784),
-    (-0.3568221, -0.618034, 0.7978784),
-    (0.7978784, 0.618034, 0.3568221),
-    (0.7978784, -0.618034, 0.3568221),
-    (-0.9341724, 0.381966, 0.3568221),
-    (0.1362939, 1, 0.3568221),
-    (0.1362939, -1, 0.3568221),
-    (-0.9341724, -0.381966, 0.3568221),
-    (0.9341724, 0.381966, -0.3568221),
-    (0.9341724, -0.381966, -0.3568221),
-    (-0.7978784, 0.618034, -0.3568221),
-    (-0.1362939, 1, -0.3568221),
-    (-0.1362939, -1, -0.3568221),
-    (-0.7978784, -0.618034, -0.3568221),
-    (0.3568221, 0.618034, -0.7978784),
-    (0.3568221, -0.618034, -0.7978784),
-    (-0.7136442, 0, -0.7978784),
-    (0, 0, -1.070466),
-];
-
 function createPolyhedronMesah(data) {
 
     const vertices = data.vertex;
@@ -173,33 +150,18 @@ function createPolyhedronMesah(data) {
     console.log(flattenedIndices);
 
 
-    // let lettersIndex = [];
-    // for (let i = 0; i < flattenedIndices.length; i++) {
-    //     const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-    //     lettersIndex.push(letters[flattenedIndices[i]]);
-    // };
-    // lettersIndex = lettersIndex.reduce((acc, letter, index) => {
-    //     if (index % 3 === 0) {
-    //         acc.push([letter]);
-    //     } else {
-    //         acc[acc.length - 1].push(letter);
-    //     }
-    //     return acc;
-    // }, []);
-
-    // console.log(lettersIndex);
-
-
-
     // create a new polyhedron geometry using the flattened indices and vertices arrays
-    const geometry = new THREE.BufferGeometry();
-    geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flattenedVertices), 3));
-    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 3));
+    // const geometry = new THREE.BufferGeometry();
+    // geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flattenedVertices), 3));
+    // geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 3));
 
-    geometry.computeVertexNormals();
+
 
     // create polyhedron geometry
-    // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+    const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
+
+
+    geometry.computeVertexNormals();
 
 
     const material = new THREE.MeshPhongMaterial({ flatShading: true });
