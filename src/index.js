@@ -80,30 +80,30 @@ document.querySelector('.toggle-switch').addEventListener('click', function () {
 });
 
 
-function createPolyhedronMesah(data) {
+const points = [
+    (0, 0, 1.070466),
+    (0.7136442, 0, 0.7978784),
+    (-0.3568221, 0.618034, 0.7978784),
+    (-0.3568221, -0.618034, 0.7978784),
+    (0.7978784, 0.618034, 0.3568221),
+    (0.7978784, -0.618034, 0.3568221),
+    (-0.9341724, 0.381966, 0.3568221),
+    (0.1362939, 1, 0.3568221),
+    (0.1362939, -1, 0.3568221),
+    (-0.9341724, -0.381966, 0.3568221),
+    (0.9341724, 0.381966, -0.3568221),
+    (0.9341724, -0.381966, -0.3568221),
+    (-0.7978784, 0.618034, -0.3568221),
+    (-0.1362939, 1, -0.3568221),
+    (-0.1362939, -1, -0.3568221),
+    (-0.7978784, -0.618034, -0.3568221),
+    (0.3568221, 0.618034, -0.7978784),
+    (0.3568221, -0.618034, -0.7978784),
+    (-0.7136442, 0, -0.7978784),
+    (0, 0, -1.070466),
+];
 
-    const points = [
-        (0, 0, 1.070466),
-        (0.7136442, 0, 0.7978784),
-        (-0.3568221, 0.618034, 0.7978784),
-        (-0.3568221, -0.618034, 0.7978784),
-        (0.7978784, 0.618034, 0.3568221),
-        (0.7978784, -0.618034, 0.3568221),
-        (-0.9341724, 0.381966, 0.3568221),
-        (0.1362939, 1, 0.3568221),
-        (0.1362939, -1, 0.3568221),
-        (-0.9341724, -0.381966, 0.3568221),
-        (0.9341724, 0.381966, -0.3568221),
-        (0.9341724, -0.381966, -0.3568221),
-        (-0.7978784, 0.618034, -0.3568221),
-        (-0.1362939, 1, -0.3568221),
-        (-0.1362939, -1, -0.3568221),
-        (-0.7978784, -0.618034, -0.3568221),
-        (0.3568221, 0.618034, -0.7978784),
-        (0.3568221, -0.618034, -0.7978784),
-        (-0.7136442, 0, -0.7978784),
-        (0, 0, -1.070466),
-    ];
+function createPolyhedronMesah(data) {
 
     const vertices = data.vertex;
     const indices = data.face;
@@ -120,8 +120,18 @@ function createPolyhedronMesah(data) {
             // return the face center coordinates to the faceCenters array
             return faceCenter;
         }
-        // if there are 3 vertices in the face, skip the face
+        // if the face has 3 vertices, skip the face
+        return null;
     });
+
+    // remove null values from faceCenters array
+    for (let i = 0; i < faceCenters.length; i++) {
+        if (faceCenters[i] === null) {
+            faceCenters.splice(i, 1);
+            i--;
+        };
+    }
+
 
     // add new coordinates to the vertices array
     let faceIndicesStart;
@@ -151,57 +161,45 @@ function createPolyhedronMesah(data) {
         };
     };
 
-    // flatten the indices array and the vertices array
+    // flatten arrays so they can be used by the BufferGeometry
     const flattenedIndices = indices.flat(Infinity);
     const flattenedVertices = vertices.flat(Infinity);
 
-    // Dodecahedron
-    // 12 faces
-    // 20 vertices
-    // pentagonal faces
-    // 3 coordinates per vertex
-    // center point coordinates added to the end of the vertex array
 
-
-    console.log(vertices); // 3 coordinates for 20 vertices and 12 face vertices - 96 vertices total
-    console.log(indices); // original 20 vertices and 12 face vertices
-    // 3 values per triangle - 5 triangles per face - 12 faces - 60 triangles - 180 indices
-
-
-
-    let lettersIndex = [];
-    for (let i = 0; i < flattenedIndices.length; i++) {
-        const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
-        lettersIndex.push(letters[flattenedIndices[i]]);
-    };
-    lettersIndex = lettersIndex.reduce((acc, letter, index) => {
-        if (index % 3 === 0) {
-            acc.push([letter]);
-        } else {
-            acc[acc.length - 1].push(letter);
-        }
-        return acc;
-    }, []);
-
-    // console.log(lettersIndex);
-
-
-    // console.log(faceCenters);
+    console.log(vertices);
+    console.log(indices);
+    console.log(faceCenters);
     console.log(flattenedVertices);
     console.log(flattenedIndices);
 
-    // PROBLEM: arrays are being flatted properly, but the resulting geometry is not being rendered properly
+
+    // let lettersIndex = [];
+    // for (let i = 0; i < flattenedIndices.length; i++) {
+    //     const letters = 'abcdefghijklmnopqrstuvwxyz'.split('');
+    //     lettersIndex.push(letters[flattenedIndices[i]]);
+    // };
+    // lettersIndex = lettersIndex.reduce((acc, letter, index) => {
+    //     if (index % 3 === 0) {
+    //         acc.push([letter]);
+    //     } else {
+    //         acc[acc.length - 1].push(letter);
+    //     }
+    //     return acc;
+    // }, []);
+
+    // console.log(lettersIndex);
+
 
 
     // create a new polyhedron geometry using the flattened indices and vertices arrays
     const geometry = new THREE.BufferGeometry();
     geometry.setAttribute('position', new THREE.BufferAttribute(new Float32Array(flattenedVertices), 3));
-    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 1));
+    geometry.setIndex(new THREE.BufferAttribute(new Uint32Array(flattenedIndices), 3));
+
+    geometry.computeVertexNormals();
 
     // create polyhedron geometry
     // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
-
-
 
 
     const material = new THREE.MeshPhongMaterial({ flatShading: true });
@@ -209,7 +207,6 @@ function createPolyhedronMesah(data) {
     const polyhedron = new THREE.Mesh(geometry, material);
 
     return polyhedron;
-
 
 }
 
@@ -238,7 +235,7 @@ function init() {
     // add a tetrahedron to the scene
     // const tetrahedron = new THREE.Mesh(new THREE.TetrahedronGeometry(200, 0), new THREE.MeshPhongMaterial({ flatShading: true }));
 
-    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Cube);
+    const tetrahedron = createPolyhedronMesah(POLYHEDRA.Tetrahedron);
 
     // add a cube to the scene
     const cube = new THREE.Mesh(new THREE.BoxGeometry(200, 200, 200), new THREE.MeshPhongMaterial({ flatShading: true }));
@@ -254,6 +251,8 @@ function init() {
 
     // add all the shapes to an array
     polyhedrons = [tetrahedron, cube, octahedron, dodecahedron, icosahedron];
+
+    console.log(polyhedrons);
 
     currentPolyhedron = polyhedrons[2];
 
