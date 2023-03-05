@@ -11,8 +11,26 @@ let polyhedrons, currentPolyhedron;
 init();
 animate();
 
+
+setTimeout(function () {
+    // if the slider value is 2 (initial value) after 2.5 seconds, slowly raise the opacity of the hint element
+    if (document.getElementById("faceSlider").value === "2") {
+        let opacity = 0;
+        const interval = setInterval(function () {
+            opacity += 0.1;
+            document.getElementById("hint").style.opacity = opacity;
+            if (opacity >= 1) {
+                clearInterval(interval);
+            };
+        }, 100);
+    }
+}, 2500);
+
 // get the value of the slider when it is changed
 document.getElementById("faceSlider").addEventListener("input", function () {
+    // hide the hint element
+    document.getElementById("hint").style.display = "none";
+
     // get the value of the slider
     let sliderValue = document.getElementById("faceSlider").value;
     // remove the current shape from the scene
@@ -134,8 +152,6 @@ function createPolyhedronMesah(data) {
     };
 
     // flatten the indices array and the vertices array
-    // const flattenedIndices = new Uint32Array([indices.flat(Infinity)]);
-    // const flattenedVertices = new Float32Array([vertices.flat(Infinity)]);
     const flattenedIndices = indices.flat(Infinity);
     const flattenedVertices = vertices.flat(Infinity);
 
@@ -185,8 +201,6 @@ function createPolyhedronMesah(data) {
     // create polyhedron geometry
     // const geometry = new THREE.PolyhedronGeometry(flattenedVertices, flattenedIndices, 200, 0);
 
-    // Compute the face normals and vertex normals
-    geometry.computeVertexNormals();
 
 
 
@@ -288,8 +302,8 @@ function animate() {
 function render() {
 
     // currentPolyhedron.rotation.y += 0.005;
-    // currentPolyhedron.rotation.x += 0.005;
-    // currentPolyhedron.rotation.z += 0.005;
+    currentPolyhedron.rotation.x += 0.005;
+    currentPolyhedron.rotation.z += 0.005;
 
     controls.update();
 
