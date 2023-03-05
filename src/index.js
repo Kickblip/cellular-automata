@@ -1,5 +1,5 @@
 import * as THREE from 'three';
-import POLYHEDRA from './polyhedra.js';
+import POLYHEDRA from '../dist/polyhedra.js';
 
 import { AsciiEffect } from 'three/addons/effects/AsciiEffect.js';
 import { TrackballControls } from 'three/addons/controls/TrackballControls.js';
