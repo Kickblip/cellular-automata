@@ -75,6 +75,18 @@ body {
     right: 0;
 }
 
+#github {
+    color: #ffffffbf;
+    font-size: 19px;
+    font-weight: 300;
+    font-family: Courier New, monospace;
+    /* center the link at the bottom of the page */
+    position: fixed;
+    margin: 0;
+    right: 47%;
+
+}
+
 .toggle-switch,
 .toggle-switch .toggle-knob {
     -moz-transition: all 0.2s ease-in;
