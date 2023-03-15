@@ -1,6 +1,10 @@
 # Rendering Polyhedra in 3D Space
 
-## Update: Version 2.0 - changes to geometry system and new hints!
+## New Version 2.0 Changes!
+- new geometry system
+- project link
+- slider hint
+- toggle for ascii effect
 
 ![image](https://user-images.githubusercontent.com/54160850/220791630-767f3aad-ec87-4f0a-b2ca-cb190f615023.png)
 
